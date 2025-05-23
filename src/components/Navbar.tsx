@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, User, Music, Home, Compass, ListMusic } from 'lucide-react';
+import ThemeSwitcher from './ThemeSwitcher';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // This will be replaced with actual auth state
+  const { currentUser, userProfile, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -34,12 +37,14 @@ const Navbar: React.FC = () => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center">
-                  <User size={16} className="text-white" />
-                </div>
-                <span className="text-gray-300">John Doe</span>
+                <Link to="/profile" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                  <div className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center">
+                    <User size={16} className="text-white" />
+                  </div>
+                  <span className="text-gray-300">{userProfile?.displayName || 'User'}</span>
+                </Link>
               </div>
             ) : (
               <>
@@ -57,6 +62,11 @@ const Navbar: React.FC = () => {
                 </Link>
               </>
             )}
+          </div>
+
+          {/* Theme Switcher */}
+          <div className="ml-4">
+            <ThemeSwitcher />
           </div>
 
           {/* Mobile Menu Button */}
@@ -92,13 +102,17 @@ const Navbar: React.FC = () => {
             >
               Playlists
             </Link>
-            {isLoggedIn ? (
-              <div className="flex items-center space-x-3 pt-4">
+            {isAuthenticated ? (
+              <Link
+                to="/profile"
+                className="flex items-center space-x-3 pt-4"
+                onClick={toggleMenu}
+              >
                 <div className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center">
                   <User size={16} className="text-white" />
                 </div>
-                <span className="text-gray-300">John Doe</span>
-              </div>
+                <span className="text-gray-300">{userProfile?.displayName || 'User'}</span>
+              </Link>
             ) : (
               <div className="flex flex-col space-y-2 pt-4">
                 <Link

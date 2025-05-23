@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { User, Settings, LogOut, Moon, Sun, Music, Clock, Heart, Edit2, Save, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../config/firebase';
+import { useAuth } from '../contexts/AuthContext';
 
 interface UserStats {
   totalPlays: number;
@@ -21,6 +24,8 @@ interface UserProfile {
 const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const navigate = useNavigate();
+  const { userProfile } = useAuth();
   
   // Sample data - replace with actual data from Firebase
   const [profile, setProfile] = useState<UserProfile>({
@@ -49,8 +54,13 @@ const Profile: React.FC = () => {
     // Add theme switching logic here
   };
 
-  const handleLogout = () => {
-    // Add logout logic here
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     setShowLogoutModal(false);
   };
 
